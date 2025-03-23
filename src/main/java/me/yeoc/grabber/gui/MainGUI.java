@@ -55,11 +55,31 @@ public class MainGUI {
 
     public MainGUI() {
         service = new ICPCGlobalService();
-        refreshContestButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                contestTree = new ContestTree(contests, service.getGlobal(Integer.parseInt(season.getText())));
-            }
+        refreshContestButton.addActionListener(e -> {
+            refreshContestButton.setEnabled(false); // 防止重复点击
+            info("正在加载全局数据...");
+            SwingWorker<List<Contest>, Void> worker = new SwingWorker<>() {
+                @Override
+                protected List<Contest> doInBackground() throws Exception {
+                    int seasonId = Integer.parseInt(season.getText());
+                    return service.getGlobal(seasonId);
+                }
+
+                @Override
+                protected void done() {
+                    try {
+                        List<Contest> globalList = get();
+                        contestTree = new ContestTree(contests, globalList);
+                        info("全局数据加载完成！");
+                    } catch (Exception ex) {
+                        info("加载失败：" + ex.getMessage());
+                        ex.printStackTrace();
+                    } finally {
+                        refreshContestButton.setEnabled(true);
+                    }
+                }
+            };
+            worker.execute();
         });
         informRefreshButton.addActionListener(new ActionListener() {
             @Override
@@ -80,29 +100,56 @@ public class MainGUI {
                 }
                 TreePath path = e.getPath();
                 Object lastComponent = path.getLastPathComponent();
-                if (lastComponent instanceof ReloadNode) {
-                    ReloadNode component = (ReloadNode) lastComponent;
+                if (lastComponent instanceof ReloadNode component) {
                     TreeNode parent = component.getParent();
-                    if (parent instanceof ContestNode) {
-                        ContestNode contestNode = (ContestNode) parent;
+                    if (parent instanceof ContestNode contestNode) {
                         info("开始刷新节点！" + contestNode.getContest().getLabel());
-                        List<Contest> contest = service.getContest(contestNode.getContest().getId());
-                        if (contest.isEmpty()) {
-                            contestNode.removeAllChildren();
-                            contestNode.add(new TextNode("空!"));
 
-                        } else {
-                            contestNode.setChildrenWithReloadNode(contest);
+                        SwingWorker<List<Contest>, Void> worker = new SwingWorker<>() {
+                            @Override
+                            protected List<Contest> doInBackground() throws Exception {
+                                return service.getContest(contestNode.getContest().getId());
+                            }
 
-                        }
+                            @Override
+                            protected void done() {
+                                try {
+                                    List<Contest> contestList = get();
 
-                        contestNode.add(new ReloadNode());
-                        DefaultTreeModel model = (DefaultTreeModel) contests.getModel();
-                        model.reload(contestNode);
+                                    contestNode.removeAllChildren();
+                                    if (contestList.isEmpty()) {
+                                        contestNode.add(new TextNode("空!"));
+                                    } else {
+                                        contestNode.setChildrenWithReloadNode(contestList);
+                                    }
+                                    contestNode.add(new ReloadNode());
+                                    DefaultTreeModel model = (DefaultTreeModel) contests.getModel();
+                                    model.reload(contestNode);
+                                    info("刷新完成！");
+                                } catch (Exception e) {
+                                    info("刷新失败：" + e.getMessage());
+                                }
+                            }
+                        };
+
+                        worker.execute();
+//                        info("开始刷新节点！" + contestNode.getContest().getLabel());
+//                        List<Contest> contest = service.getContest(contestNode.getContest().getId());
+//                        if (contest.isEmpty()) {
+//                            contestNode.removeAllChildren();
+//                            contestNode.add(new TextNode("空!"));
+//
+//                        } else {
+//                            contestNode.setChildrenWithReloadNode(contest);
+//
+//                        }
+//
+//                        contestNode.add(new ReloadNode());
+//                        DefaultTreeModel model = (DefaultTreeModel) contests.getModel();
+//                        model.reload(contestNode);
                     }
 
-                } else if (lastComponent instanceof ContestNode) {
-                    ContestNode selectedNode = (ContestNode) lastComponent;
+                } else if (lastComponent instanceof ContestNode selectedNode) {
 
                     if (selectedNode.isLeafNode()) {
                         Contest contest = selectedNode.getContest();
@@ -138,14 +185,36 @@ public class MainGUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //TODO AUTH判断
-                List<Institution> institution = service.getInstitution(institutionName.getText());
-                String[] columnNames = {"编号", "名称", "国家"};
-                DefaultTableModel model = new DefaultTableModel(columnNames, 0);
-                for (Institution ins : institution) {
-                    System.out.println(ins);
-                    model.addRow(new Object[]{ins.getId(), ins.getName(), ins.getCountry()});
-                }
-                institutionList.setModel(model);
+                info("正在刷新机构...");
+                queryInstitution.setEnabled(false);
+                new SwingWorker<List<Institution>, Void>() {
+                    @Override
+                    protected List<Institution> doInBackground() throws Exception {
+                        return service.getInstitution(institutionName.getText());
+                    }
+
+                    @Override
+                    @SneakyThrows
+                    protected void done() {
+                        try {
+                            String[] columnNames = {"编号", "名称", "国家"};
+                            DefaultTableModel model = new DefaultTableModel(columnNames, 0);
+                            for (Institution ins : get()) {
+                                model.addRow(new Object[]{ins.getId(), ins.getName(), ins.getCountry()});
+                            }
+                            institutionList.setModel(model);
+                            info("刷新完毕！");
+                        } catch (Exception e) {
+                            info("刷新失败：" + e.getMessage());
+                        } finally {
+                            queryInstitution.setEnabled(true);
+                        }
+
+
+                    }
+                }.execute();
+//                List<Institution> institution = ;
+
 
             }
         });
@@ -153,8 +222,33 @@ public class MainGUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 info("正在请求创建队伍...");
-                String team = service.createTeam(teamName.getText(), Integer.parseInt(contestId.getText()), Integer.parseInt(createTeamInstitution.getText()));
-                info(team);
+                createTeamButton.setEnabled(false);  // 防止重复点击
+
+                SwingWorker<String, Void> worker = new SwingWorker<>() {
+                    @Override
+                    protected String doInBackground() throws Exception {
+                        // 在后台执行耗时操作
+                        return service.createTeam(
+                                teamName.getText(),
+                                Integer.parseInt(contestId.getText()),
+                                Integer.parseInt(createTeamInstitution.getText())
+                        );
+                    }
+
+                    @Override
+                    protected void done() {
+                        try {
+                            String result = get();
+                            info(result);
+                        } catch (Exception e) {
+                            info("创建失败：" + e.getMessage());
+                        } finally {
+                            createTeamButton.setEnabled(true);
+                        }
+                    }
+                };
+
+                worker.execute();
             }
         });
         institutionList.addMouseListener(new MouseAdapter() {
