@@ -16,6 +16,15 @@
     <maven.compiler.target>17</maven.compiler.target>
     <java.version>17</java.version>
   </properties>
+
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <name>GitHub Packages</name>
+      <url>https://maven.pkg.github.com/LittleChiu/ICPCGlobalGrabber</url>
+    </repository>
+  </distributionManagement>
+
   <build>
     <plugins>
       <plugin>
