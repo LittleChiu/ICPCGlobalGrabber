@@ -42,7 +42,7 @@ public class MainGUI {
     private ContestTree contestTree;
 
     @SneakyThrows
-    public static void start(String[] args) {
+    public static void start() {
         UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
         JFrame frame = new JFrame("ICPC Global Grabber ver.1.0 by LittleQiu233");
         frame.setContentPane(new MainGUI().mainPanel);
