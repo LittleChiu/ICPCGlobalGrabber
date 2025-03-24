@@ -89,10 +89,10 @@
           <!--          <icon>${project.basedir}/src/main/resources/icons/icpc_logo_64x64.ico</icon>-->
           <!--可选app-image、exe、msi、rpm、deb、pkg、dmg，msi需要另外一个程序配合，app-image是exe绿色版，exe是安装包，其他自行搜索-->
           <type>app-image</type>
-          <appVersion>1.0.0</appVersion>
-          <copyright>版权</copyright>
-          <vendor>厂商</vendor>
-          <description>描述</description>
+          <appVersion>2.0</appVersion>
+          <copyright>LittleQiu</copyright>
+          <vendor>Zhejiang Sci-Tech University</vendor>
+          <description>ICPC Global Client</description>
 
           <!-- 是否递归分析依赖，一般false就可以，改成true，增强打包兼容性，不过打包会变慢，不填此参数，默认false -->
           <!--<recursive>false</recursive>-->

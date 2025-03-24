@@ -176,7 +176,7 @@ public class MainGUI {
                     if (selectedNode.isLeafNode()) {
                         Contest contest = selectedNode.getContest();
                         info(contest.getId() + " " + contest.getLabel() + " active: " + contest.isActive());
-                        if (contest.isActive()) {
+                        if (!contest.isActive()) {
                             info("Warning! 这个比赛还没有开启,请慎重创队!");
                         }
                         contestId.setText(String.valueOf(contest.getId()));
