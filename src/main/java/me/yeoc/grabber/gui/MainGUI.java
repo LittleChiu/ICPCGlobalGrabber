@@ -44,7 +44,7 @@ public class MainGUI {
     @SneakyThrows
     public static void start() {
         UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-        JFrame frame = new JFrame("ICPC Global Grabber ver.1.0 by LittleQiu233");
+        JFrame frame = new JFrame("ICPC Global Grabber Ver 1.0 by LittleQiu233");
         frame.setContentPane(new MainGUI().mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
@@ -84,7 +84,7 @@ public class MainGUI {
         informRefreshButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("更新成功！" + auth.getText());
+                info("更新成功！" + auth.getText());
                 service = new ICPCGlobalService(auth.getText());
             }
         });
@@ -155,9 +155,10 @@ public class MainGUI {
                         Contest contest = selectedNode.getContest();
                         info(contest.getId() + " " + contest.getLabel() + " active: " + contest.isActive());
                         if (contest.isActive()) {
-                            contestId.setText(String.valueOf(contest.getId()));
-
+                            info("Warning! 这个比赛还没有开启,请慎重创队!");
                         }
+                        contestId.setText(String.valueOf(contest.getId()));
+
                     }
                 }
 //                else if (lastComponent instanceof ContestNode) {
