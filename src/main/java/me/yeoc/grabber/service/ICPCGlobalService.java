@@ -1,12 +1,14 @@
 package me.yeoc.grabber.service;
 
 import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import me.yeoc.grabber.object.Contest;
 import me.yeoc.grabber.object.Institution;
 import me.yeoc.grabber.object.TeamObject;
+import me.yeoc.grabber.object.User;
 import okhttp3.*;
 
 import java.util.ArrayList;
@@ -20,6 +22,21 @@ public class ICPCGlobalService {
     private String auth;
 
 
+    @SneakyThrows
+    public User getUserInfo(){
+        if (auth == null){
+            return null;
+        }
+        OkHttpClient client = new OkHttpClient().newBuilder()
+                .build();
+        Request request = new Request.Builder()
+                .url("https://icpc.global/api/person/info/basic")
+                .addHeader("authorization", auth)
+                .build();
+        Response response = client.newCall(request).execute();
+        String string = response.body().string();
+        return JSONObject.parseObject(string, User.class);
+    }
     @SneakyThrows
     public List<Contest> getContest(int id){
         if (auth == null){
