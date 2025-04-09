@@ -155,20 +155,6 @@ public class MainGUI {
                         };
 
                         worker.execute();
-//                        info("开始刷新节点！" + contestNode.getContest().getLabel());
-//                        List<Contest> contest = service.getContest(contestNode.getContest().getId());
-//                        if (contest.isEmpty()) {
-//                            contestNode.removeAllChildren();
-//                            contestNode.add(new TextNode("空!"));
-//
-//                        } else {
-//                            contestNode.setChildrenWithReloadNode(contest);
-//
-//                        }
-//
-//                        contestNode.add(new ReloadNode());
-//                        DefaultTreeModel model = (DefaultTreeModel) contests.getModel();
-//                        model.reload(contestNode);
                     }
 
                 } else if (lastComponent instanceof ContestNode selectedNode) {
@@ -183,24 +169,6 @@ public class MainGUI {
 
                     }
                 }
-//                else if (lastComponent instanceof ContestNode) {
-//                    ContestNode selectedNode = (ContestNode) lastComponent;
-//                    Contest contest = selectedNode.getContest();
-//
-//                    System.out.println("点击了: " + contest.getLabel());
-//
-//                    // 如果是非叶子节点并且还没有加载过子节点，就加载
-//                    if (!contest.isLeaf() && selectedNode.getChildCount() == 0) {
-//                        // 模拟获取子节点（你可以换成实际数据源，比如数据库、接口等）
-//                        // 设置子节点
-//                        System.out.println("正在加载ing");
-//                        selectedNode.setChildren(service.getContest(contest.getId()));
-//                        selectedNode.add(new ReloadNode());
-//                        // 通知树刷新节点
-//                        DefaultTreeModel model = (DefaultTreeModel) contests.getModel();
-//                        model.reload(selectedNode);
-//                    }
-//                }
             }
         });
 
@@ -250,7 +218,6 @@ public class MainGUI {
                 SwingWorker<String, Void> worker = new SwingWorker<>() {
                     @Override
                     protected String doInBackground() throws Exception {
-                        // 在后台执行耗时操作
                         return service.createTeam(
                                 teamName.getText(),
                                 Integer.parseInt(contestId.getText()),

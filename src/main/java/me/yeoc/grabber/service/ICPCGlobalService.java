@@ -11,8 +11,6 @@ import me.yeoc.grabber.object.TeamObject;
 import me.yeoc.grabber.object.User;
 import okhttp3.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 

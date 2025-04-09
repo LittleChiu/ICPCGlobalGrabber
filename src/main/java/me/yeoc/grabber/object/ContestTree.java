@@ -3,7 +3,6 @@ package me.yeoc.grabber.object;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
